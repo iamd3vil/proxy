@@ -10,7 +10,7 @@ func init() {
 }
 
 func main() {
-	p, err := NewProxy(cfg.Type, cfg.Source, cfg.Destination)
+	p, err := NewProxy(cfg)
 	if err != nil {
 		log.Fatalf("couldn't start a TCP proxy: %v", err)
 	}

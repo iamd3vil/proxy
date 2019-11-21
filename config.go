@@ -13,6 +13,8 @@ type Config struct {
 	Type        string `koanf:"type"`
 	Source      string `koanf:"source"`
 	Destination string `koanf:"destination"`
+	Certificate string `koanf:"cert"`
+	Key         string `koanf:"key"`
 }
 
 var cfg Config

@@ -1,10 +1,9 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
-	"io"
-	"log"
-	"net"
+	"io/ioutil"
 )
 
 // Proxy needs to be implemented by any proxy
@@ -12,77 +11,33 @@ type Proxy interface {
 	StartProxy() error
 }
 
-// TCPProxy represents a TCP Proxy
-type TCPProxy struct {
-	Src *net.TCPAddr
-	Dst *net.TCPAddr
-}
-
 // NewProxy returns a new proxy instance according to proxy type
-func NewProxy(proxyType, src, dst string) (Proxy, error) {
-	switch proxyType {
+func NewProxy(config Config) (Proxy, error) {
+	switch config.Type {
 	case "tcp":
-		return NewTCPProxy(src, dst)
+		return NewTCPProxy(config.Source, config.Destination)
+	case "tls":
+		// Read cert and key from file
+		cert, err := ioutil.ReadFile(config.Certificate)
+		if err != nil {
+			return nil, fmt.Errorf("error while reading cert: %v", err)
+		}
+
+		key, err := ioutil.ReadFile(config.Key)
+		if err != nil {
+			return nil, fmt.Errorf("error while reading key: %v", err)
+		}
+
+		cer, err := tls.X509KeyPair(cert, key)
+		if err != nil {
+			return nil, fmt.Errorf("invalid certs: %v", err)
+		}
+
+		tc := &tls.Config{
+			Certificates: []tls.Certificate{cer},
+		}
+		return NewTLSProxy(config.Source, config.Destination, tc)
 	default:
-		return nil, fmt.Errorf("unrecognized proxy type: %s", proxyType)
-	}
-}
-
-// NewTCPProxy returns a new proxy instance
-func NewTCPProxy(src, dst string) (*TCPProxy, error) {
-	laddr, err := net.ResolveTCPAddr("tcp", cfg.Source)
-	if err != nil {
-		return nil, err
-	}
-
-	raddr, err := net.ResolveTCPAddr("tcp", cfg.Destination)
-	if err != nil {
-		return nil, err
-	}
-
-	return &TCPProxy{
-		Src: laddr,
-		Dst: raddr,
-	}, nil
-}
-
-// StartProxy starts a TCP Proxy
-func (p *TCPProxy) StartProxy() error {
-	listener, err := net.ListenTCP("tcp", p.Src)
-	if err != nil {
-		return fmt.Errorf("error while listening: %v", err)
-	}
-
-	for {
-		conn, err := listener.AcceptTCP()
-		if err != nil {
-			log.Printf("couldn't accept connection: '%v'", err)
-			continue
-		}
-
-		defer conn.Close()
-
-		rconn, err := net.DialTCP("tcp", nil, p.Dst)
-		if err != nil {
-			conn.Close()
-			log.Printf("couldn't connect to destination '%v': %v", p.Dst, err)
-			continue
-		}
-		defer rconn.Close()
-
-		closeChan := make(chan int, 2)
-
-		go func() {
-			io.Copy(rconn, conn)
-			closeChan <- 1
-		}()
-		go func() {
-			io.Copy(conn, rconn)
-			closeChan <- 1
-		}()
-
-		<-closeChan
-		rconn.Close()
-		conn.Close()
+		return nil, fmt.Errorf("unrecognized proxy type: %s", config.Type)
 	}
 }

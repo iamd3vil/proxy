@@ -1,4 +1,7 @@
 [proxy]
-type = "tcp"
+# Can be either "tcp" or "tls"
+type = "tcp" 
 source = "127.0.0.1:4500"
-destination = "127.0.0.1:5500"tyughb143
+destination = "127.0.0.1:5500"
+cert = "/path/to/cert"
+key = "/path/to/certkey"
