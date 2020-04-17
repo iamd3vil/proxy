@@ -49,6 +49,8 @@ func NewProxy(config Config) (Proxy, error) {
 			SessionTicketsDisabled: true,
 		}
 		return NewTLSProxy(config.Source, config.Destination, tc)
+	case "udp":
+		return NewUDPProxy(config.Source, config.Destination)
 	default:
 		return nil, fmt.Errorf("unrecognized proxy type: %s", config.Type)
 	}

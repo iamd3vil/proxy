@@ -16,7 +16,7 @@ type TLSProxy struct {
 }
 
 // NewTLSProxy returns a new proxy instance
-func NewTLSProxy(src, dst string, tlsConfig *tls.Config) (*TLSProxy, error) {
+func NewTLSProxy(src, dst string, tlsConfig *tls.Config) (Proxy, error) {
 	laddr, err := net.ResolveTCPAddr("tcp", cfg.Source)
 	if err != nil {
 		return nil, err
