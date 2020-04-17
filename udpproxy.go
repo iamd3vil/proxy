@@ -11,6 +11,7 @@ const BUFFERSIZE = 2000
 type proxyConn struct {
 	clientAddr *net.UDPAddr
 	destConn   *net.UDPConn
+	serverConn *net.UDPConn
 }
 
 // UDPProxy implements Proxy interface for proxying UDP
@@ -70,6 +71,7 @@ func (p *UDPProxy) readFromServerConn() error {
 			// Start a proxy connection for this client
 			prConn := proxyConn{}
 			prConn.clientAddr = clientAddr
+			prConn.serverConn = p.ServerConn
 
 			// Make a connection to dest
 			dConn, err := net.DialUDP("udp", nil, p.DestAddr)
@@ -106,7 +108,7 @@ func (pc *proxyConn) copyFromDestConnToClient() error {
 			return err
 		}
 
-		_, err = pc.destConn.WriteToUDP(packet[:n], pc.clientAddr)
+		_, err = pc.serverConn.WriteToUDP(packet[:n], pc.clientAddr)
 		if err != nil {
 			return err
 		}
