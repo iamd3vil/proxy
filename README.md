@@ -2,6 +2,12 @@
 
 This is a fast TCP/UDP proxy written in Golang with support for TLS in case of TCP.
 
+## Usage
+
+```bash
+$ ./proxy -config /path/to/config
+```
+
 ## Configuration
 
 There is a `config.sample.toml` provided in the repo for the sample configuration.

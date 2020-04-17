@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/knadh/koanf"
@@ -21,8 +22,11 @@ var cfg Config
 var k = koanf.New(".")
 
 func initConfig() {
+	configPath := flag.String("config", "config.toml", "Path to configuration")
+	flag.Parse()
+
 	// Load TOML config.
-	if err := k.Load(file.Provider("config.toml"), toml.Parser()); err != nil {
+	if err := k.Load(file.Provider(*configPath), toml.Parser()); err != nil {
 		log.Fatalf("error loading config: %v", err)
 	}
 
