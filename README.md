@@ -1,6 +1,6 @@
 # Proxy
 
-This is a fast TCP/UDP proxy written in Golang with support for TLS in case of TCP.
+This is a fast TCP proxy written in Golang with support for TLS in case of TCP.
 
 Docker image can be found at [https://hub.docker.com/r/iamd3vil/proxy](https://hub.docker.com/r/iamd3vil/proxy).
 
@@ -16,7 +16,7 @@ There is a `config.sample.toml` provided in the repo for the sample configuratio
 
 ```toml
 [proxy]
-# Can be either "tcp" or "tls" or "udp"
+# Can be either "tcp" or "tls"
 type = "tcp" 
 source = "127.0.0.1:4500"
 destination = "127.0.0.1:5500"

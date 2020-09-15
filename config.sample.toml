@@ -1,5 +1,5 @@
 [proxy]
-# Can be either "tcp" or "tls" or "udp"
+# Can be either "tcp" or "tls"
 type = "tcp" 
 source = "127.0.0.1:4500"
 destination = "127.0.0.1:5500"
