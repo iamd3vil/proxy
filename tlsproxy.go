@@ -17,12 +17,12 @@ type TLSProxy struct {
 
 // NewTLSProxy returns a new proxy instance
 func NewTLSProxy(src, dst string, tlsConfig *tls.Config) (Proxy, error) {
-	laddr, err := net.ResolveTCPAddr("tcp", cfg.Source)
+	laddr, err := net.ResolveTCPAddr("tcp", src)
 	if err != nil {
 		return nil, err
 	}
 
-	raddr, err := net.ResolveTCPAddr("tcp", cfg.Destination)
+	raddr, err := net.ResolveTCPAddr("tcp", dst)
 	if err != nil {
 		return nil, err
 	}

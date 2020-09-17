@@ -1,9 +1,11 @@
 [proxy]
-# Can be either "tcp" or "tls"
-type = "tcp" 
+type = "tls" # has to be either "tcp" or "tls"
 source = "127.0.0.1:4500"
-destination = "127.0.0.1:5500"
+destination = "127.0.0.1:8888"
 
-# Only required in case of tls
-cert = "/path/to/cert"
-key = "/path/to/certkey"
+[tls]
+disable_automatic = false # make this true to turn off automatic certs fetching and renewals from Letsencrypt
+domain = "example.com" # domains for automatic https
+certs_path = "/path/to/store/certs" # path where the automatic letsencrypt certs are stored
+cloudflare_api_token = "auth-token" # API token for cloudflare
+email = "hello@example.com" # Email for letsencrypt

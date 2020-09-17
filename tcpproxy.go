@@ -15,12 +15,12 @@ type TCPProxy struct {
 
 // NewTCPProxy returns a new proxy instance
 func NewTCPProxy(src, dst string) (Proxy, error) {
-	laddr, err := net.ResolveTCPAddr("tcp", cfg.Source)
+	laddr, err := net.ResolveTCPAddr("tcp", src)
 	if err != nil {
 		return nil, err
 	}
 
-	raddr, err := net.ResolveTCPAddr("tcp", cfg.Destination)
+	raddr, err := net.ResolveTCPAddr("tcp", dst)
 	if err != nil {
 		return nil, err
 	}

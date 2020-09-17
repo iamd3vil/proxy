@@ -1,3 +1,4 @@
 config.toml
 proxy
 dist
+.certmagic/
