@@ -9,3 +9,6 @@ domain = "example.com" # domains for automatic https
 certs_path = "/path/to/store/certs" # path where the automatic letsencrypt certs are stored
 cloudflare_api_token = "auth-token" # API token for cloudflare
 email = "hello@example.com" # Email for letsencrypt
+# Only set these if you want to provide certs manually, i.e disable_automatic is true.
+cert = "/path/to/cert"
+key = "/path/to/key"
