@@ -1,6 +1,6 @@
 # Proxy
 
-This is a fast TCP/TLS proxy written in Golang with support for Automatic certificates for TLS using Letsencrypt.
+This is a fast TCP/TLS proxy written in Golang with support for Automatic certificates for TLS using Letsencrypt. :boom: :boom:
 
 `proxy` uses `dns-01` challenge for Letsencrypt. Currently `proxy` supports only Cloudflare but the plan is to add a lot of DNS providers.
 
