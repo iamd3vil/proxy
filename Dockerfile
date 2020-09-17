@@ -14,4 +14,4 @@ COPY --from=builder /app/proxy .
 
 VOLUME [ "/config/config.toml" ]
 
-CMD [ "/app/proxy", "-c", "/config/config.toml" ]
+CMD [ "/app/proxy", "-config", "/config/config.toml" ]
