@@ -1,36 +1,41 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 
 	"github.com/caddyserver/certmagic"
-	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
+	"github.com/libdns/cloudflare"
 )
 
 func getTLSConfig(config Config) (*tls.Config, error) {
 	if !config.TLS.DisableAutomatic {
-		// certmagic.DefaultACME.CA = certmagic.LetsEncryptStagingCA
-		certmagic.Default.Storage = &certmagic.FileStorage{
+		magic := certmagic.NewDefault()
+		magic.Storage = &certmagic.FileStorage{
 			Path: config.TLS.CertsPath,
 		}
 
-		cfg := cloudflare.NewDefaultConfig()
-		cfg.AuthToken = config.TLS.CloudflareAPIToken
-		provider, err := cloudflare.NewDNSProviderConfig(cfg)
+		myACME := certmagic.NewACMEIssuer(magic, certmagic.ACMEIssuer{
+			CA:     certmagic.LetsEncryptProductionCA,
+			Email:  config.TLS.Email,
+			Agreed: true,
+			DNS01Solver: &certmagic.DNS01Solver{
+				DNSProvider: &cloudflare.Provider{
+					APIToken: config.TLS.CloudflareAPIToken,
+				},
+			},
+		})
+
+		magic.Issuers = append(magic.Issuers, myACME)
+
+		err := magic.ManageSync(context.Background(), []string{config.TLS.Domain})
 		if err != nil {
 			return nil, err
 		}
 
-		certmagic.DefaultACME.Email = config.TLS.Email
-		certmagic.DefaultACME.DNSProvider = provider
-		// Get tls.Config from certmagic
-		tlsConfig, err := certmagic.TLS([]string{config.TLS.Domain})
-		if err != nil {
-			return nil, err
-		}
-		return tlsConfig, nil
+		return magic.TLSConfig(), nil
 	}
 	// Read cert and key from file
 	cert, err := ioutil.ReadFile(config.TLS.Certificate)
