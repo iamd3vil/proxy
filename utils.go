@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"io/ioutil"
+	"log"
+	"os"
+	"time"
 
 	"github.com/caddyserver/certmagic"
 	"github.com/libdns/cloudflare"
@@ -35,15 +37,29 @@ func getTLSConfig(config Config) (*tls.Config, error) {
 			return nil, err
 		}
 
+		// Spin up a goroutine to check for cert expiry and renew if it expired.
+		log.Printf("running a background process to renew certs every %s", config.TLS.CheckForExpiry)
+		tc := time.NewTicker(config.TLS.CheckForExpiry)
+
+		go func() {
+			defer tc.Stop()
+			for range tc.C {
+				err := magic.ManageSync(context.Background(), []string{config.TLS.Domain})
+				if err != nil {
+					log.Printf("manage sync failed: failed to renew certs: %v", err)
+				}
+			}
+		}()
+
 		return magic.TLSConfig(), nil
 	}
 	// Read cert and key from file
-	cert, err := ioutil.ReadFile(config.TLS.Certificate)
+	cert, err := os.ReadFile(config.TLS.Certificate)
 	if err != nil {
 		return nil, fmt.Errorf("error while reading cert: %v", err)
 	}
 
-	key, err := ioutil.ReadFile(config.TLS.Key)
+	key, err := os.ReadFile(config.TLS.Key)
 	if err != nil {
 		return nil, fmt.Errorf("error while reading key: %v", err)
 	}
