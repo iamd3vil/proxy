@@ -40,7 +40,7 @@ func initConfig() (Config, error) {
 	flag.Parse()
 
 	k.Load(confmap.Provider(map[string]interface{}{
-		"tls.check_for_expiry": 10 * 24 * time.Hour,
+		"tls.check_for_expiry": 1 * time.Hour,
 	}, "."), nil)
 
 	// Load TOML config.
