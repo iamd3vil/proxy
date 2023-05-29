@@ -1,10 +1,10 @@
 module github.com/iamd3vil/proxy
 
-go 1.19
+go 1.20
 
 require (
 	github.com/caddyserver/certmagic v0.17.2
-	github.com/knadh/koanf v1.4.3
+	github.com/knadh/koanf v1.5.0
 	github.com/libdns/cloudflare v0.1.0
 	inet.af/tcpproxy v0.0.0-20221017015627-91f861402626
 )

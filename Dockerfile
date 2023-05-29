@@ -1,14 +1,12 @@
-FROM golang:1.19-alpine as builder
-
-RUN apk add git --no-cache
+FROM golang:1.20 as builder
 
 WORKDIR /app
 
 COPY . .
 
-RUN go build
+RUN CGO_ENABLED=0 go build
 
-FROM alpine:latest
+FROM ubuntu:latest
 
 WORKDIR /app
 
