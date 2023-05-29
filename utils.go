@@ -19,7 +19,7 @@ func getTLSConfig(config Config) (*tls.Config, error) {
 			Path: config.TLS.CertsPath,
 		}
 
-		myACME := certmagic.NewACMEIssuer(magic, certmagic.ACMEIssuer{
+		letsEncryptACME := certmagic.NewACMEIssuer(magic, certmagic.ACMEIssuer{
 			CA:     certmagic.LetsEncryptProductionCA,
 			Email:  config.TLS.Email,
 			Agreed: true,
@@ -30,7 +30,18 @@ func getTLSConfig(config Config) (*tls.Config, error) {
 			},
 		})
 
-		magic.Issuers = append(magic.Issuers, myACME)
+		zerosslACME := certmagic.NewACMEIssuer(magic, certmagic.ACMEIssuer{
+			CA:     certmagic.ZeroSSLProductionCA,
+			Email:  config.TLS.Email,
+			Agreed: true,
+			DNS01Solver: &certmagic.DNS01Solver{
+				DNSProvider: &cloudflare.Provider{
+					APIToken: config.TLS.CloudflareAPIToken,
+				},
+			},
+		})
+
+		magic.Issuers = append(magic.Issuers, letsEncryptACME, zerosslACME)
 
 		err := magic.ManageSync(context.Background(), []string{config.TLS.Domain})
 		if err != nil {
